@@ -15,8 +15,9 @@ function App() {
 
 
     useEffect(() => {
-        setGitInteractions(logging.gitInteractions);
+        fetchStatusInfo();
         fetchCommits();
+        setGitInteractions(logging.gitInteractions);
     }, []);
 
     async function fetchStatusInfo() {
