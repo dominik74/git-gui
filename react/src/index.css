@@ -1,0 +1,22 @@
+
+:root {
+    --hov-bg: #eaeaea;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.listbox {
+    list-style-type: none;
+}
+
+.listbox__item {
+    background: none;
+    border: none;
+}
+
+.listbox__item:hover {
+    background: var(--hov-bg);
+}

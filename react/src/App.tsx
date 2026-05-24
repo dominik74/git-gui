@@ -38,13 +38,19 @@ function App() {
 
     return (
         <>
-            <ul>
+            <ul className="listbox">
             {workingTreeFiles.map((file, i) => (
-                <li key={i}>
-                    <p>{file.path}</p>
-                    <p>{file.state}</p>
-                    <p>is staged: {file.isStaged ? 'true' : 'false'}</p>
-                    <button onClick={() => stage(file)}>STAGE</button>
+                <li
+                    key={i}
+                >
+                    <button
+                        className="listbox__item"
+                        onClick={() => stage(file)}
+                        style={{ color: file.isStaged ? 'green' : 'red' }}
+                    >
+                        <span>{file.state}: </span>
+                        <span>{file.path}</span>
+                    </button>
                 </li>
             ))}
             </ul>
