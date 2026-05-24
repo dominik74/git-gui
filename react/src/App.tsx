@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as api from './api.ts';
 import * as status from './status.ts';
 import * as logging from './logging.ts';
@@ -11,12 +11,12 @@ function App() {
     const [commitMessage, setCommitMessage] = useState<string>('');
 
 
+    useEffect(() => {
+        setGitInteractions(logging.gitInteractions);
+    }, []);
+
     async function fetchStatusInfo() {
         setWorkingTreeFiles((await status.getStatusInfo()).fileInfos);
-    }
-
-    async function fetchGitInteractions() {
-        setGitInteractions(logging.gitInteractions);
     }
 
     async function stageAll() {
@@ -94,8 +94,6 @@ function App() {
                         </li>
                     ))}
                 </ul>
-
-                <button onClick={fetchGitInteractions}>INTERACTIONS</button>
             </section>
         </div>
     )
