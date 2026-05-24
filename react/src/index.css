@@ -20,3 +20,23 @@
 .listbox__item:hover {
     background: var(--hov-bg);
 }
+
+.main {
+    display: flex;
+}
+
+.left-panel {
+    flex: 1;
+}
+
+.right-panel {
+    flex: 1;
+}
+
+.git-interactions {
+    list-style-type: none;
+}
+
+.git-interactions__command {
+    font-weight: bold;
+}

@@ -41,51 +41,58 @@ function App() {
     }
 
     return (
-        <>
-            <ul className="listbox">
-            {workingTreeFiles.map((file, i) => (
-                <li
-                    key={i}
-                >
-                    <button
-                        className="listbox__item"
-                        onClick={() => toggleStage(file)}
-                        style={{ color: file.isStaged ? 'green' : 'red' }}
+        <div className="main">
+            <section className="left-panel">
+                <button onClick={fetchStatusInfo}>STATUS</button>
+                <button onClick={stageAll}>STAGE ALL</button>
+                <button onClick={unstageAll}>UNSTAGE ALL</button>
+
+                <ul className="listbox">
+                {workingTreeFiles.map((file, i) => (
+                    <li
+                        key={i}
                     >
-                        <span>{file.state}: </span>
-                        <span>{file.path}</span>
-                    </button>
-                </li>
-            ))}
-            </ul>
-
-            <button onClick={fetchStatusInfo}>STATUS</button>
-            <button onClick={stageAll}>STAGE ALL</button>
-            <button onClick={unstageAll}>UNSTAGE ALL</button>
-
-            <textarea
-                value={commitMessage}
-                onChange={(e) => setCommitMessage(e.target.value)}
-            />
-
-            <button onClick={commit}>COMMIT</button>
-
-            <ul>
-                {gitInteractions.map((interaction, i) => (
-                    <li key={i}>
-                        <p>{interaction.command}</p>
-                        <p>
-                            {interaction.response === '' ?
-                                '(no response)' :
-                                interaction.response
-                            }
-                        </p>
+                        <button
+                            className="listbox__item"
+                            onClick={() => toggleStage(file)}
+                            style={{ color: file.isStaged ? 'green' : 'red' }}
+                        >
+                            <span>{file.state}: </span>
+                            <span>{file.path}</span>
+                        </button>
                     </li>
                 ))}
-            </ul>
+                </ul>
 
-            <button onClick={fetchGitInteractions}>INTERACTIONS</button>
-        </>
+                <textarea
+                    value={commitMessage}
+                    onChange={(e) => setCommitMessage(e.target.value)}
+                />
+
+                <button onClick={commit}>COMMIT</button>
+            </section>
+
+            <section className="right-panel">
+                <ul className="git-interactions">
+                    {gitInteractions.map((interaction, i) => (
+                        <li
+                            key={i}
+                            className="git-interactions__item"
+                        >
+                            <p className="git-interactions__command">{interaction.command}</p>
+                            <p className="git-interactions__response">
+                                {interaction.response === '' ?
+                                    '(no response)' :
+                                    interaction.response
+                                }
+                            </p>
+                        </li>
+                    ))}
+                </ul>
+
+                <button onClick={fetchGitInteractions}>INTERACTIONS</button>
+            </section>
+        </div>
     )
 }
 
