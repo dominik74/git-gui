@@ -27,8 +27,12 @@ function App() {
         api.unstageAll();
     }
 
-    async function stage(fileInfo: FileInfo) {
-        api.stage(fileInfo.path);
+    async function toggleStage(fileInfo: FileInfo) {
+        if (fileInfo.isStaged) {
+            api.unstage(fileInfo.path);
+        } else {
+            api.stage(fileInfo.path);
+        }
     }
 
     async function commit() {
@@ -45,7 +49,7 @@ function App() {
                 >
                     <button
                         className="listbox__item"
-                        onClick={() => stage(file)}
+                        onClick={() => toggleStage(file)}
                         style={{ color: file.isStaged ? 'green' : 'red' }}
                     >
                         <span>{file.state}: </span>

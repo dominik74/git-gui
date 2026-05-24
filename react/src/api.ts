@@ -43,6 +43,10 @@ export async function stage(filePath: string) {
     await runGitCommand('git add "' + filePath + '"');
 }
 
+export async function unstage(filePath: string) {
+    await runGitCommand('git restore --staged "' + filePath + '"');
+}
+
 export async function stageAll() {
     await runGitCommand('git add .');
 }
