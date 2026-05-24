@@ -21,10 +21,12 @@ function App() {
 
     async function stageAll() {
         api.stageAll();
+        fetchStatusInfo();
     }
 
     async function unstageAll() {
         api.unstageAll();
+        fetchStatusInfo();
     }
 
     async function toggleStage(fileInfo: FileInfo) {
@@ -33,10 +35,13 @@ function App() {
         } else {
             api.stage(fileInfo.path);
         }
+
+        fetchStatusInfo();
     }
 
     async function commit() {
         api.commit(commitMessage);
+        fetchStatusInfo();
         setCommitMessage('');
     }
 
