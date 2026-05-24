@@ -2,21 +2,29 @@ import { useEffect, useState } from 'react'
 import * as api from './api.ts';
 import * as status from './status.ts';
 import * as logging from './logging.ts';
+import * as log from './log.ts';
 import type { FileInfo } from './types/FileInfo.ts'
 import type { GitInteraction } from './types/GitInteraction.ts';
+import type { CommitInfo } from './types/CommitInfo.ts';
 
 function App() {
     const [workingTreeFiles, setWorkingTreeFiles] = useState<FileInfo[]>([]);
+    const [commits, setCommits] = useState<CommitInfo[]>([]);
     const [gitInteractions, setGitInteractions] = useState<GitInteraction[]>([]);
     const [commitMessage, setCommitMessage] = useState<string>('');
 
 
     useEffect(() => {
         setGitInteractions(logging.gitInteractions);
+        fetchCommits();
     }, []);
 
     async function fetchStatusInfo() {
         setWorkingTreeFiles((await status.getStatusInfo()).fileInfos);
+    }
+
+    async function fetchCommits() {
+        setCommits(await log.getCommits());
     }
 
     async function stageAll() {
@@ -47,6 +55,7 @@ function App() {
     async function commit() {
         api.commit(commitMessage);
         fetchStatusInfo();
+        fetchCommits();
         setCommitMessage('');
     }
 
@@ -75,12 +84,26 @@ function App() {
                 ))}
                 </ul>
 
-                <textarea
-                    value={commitMessage}
-                    onChange={(e) => setCommitMessage(e.target.value)}
-                />
+                <div>
+                    <textarea
+                        value={commitMessage}
+                        onChange={(e) => setCommitMessage(e.target.value)}
+                    />
 
-                <button onClick={commit}>COMMIT</button>
+                    <button onClick={commit}>COMMIT</button>
+                </div>
+
+                <button onClick={fetchCommits}>LOG</button>
+
+                <h2>commits:</h2>
+                <ul>
+                    {commits.map((commit, i) => (
+                        <li key={i}>
+                            <span>{commit.hash} </span>
+                            <span>{commit.message}</span>
+                        </li>
+                    ))}
+                </ul>
             </section>
 
             <section className="right-panel">

@@ -62,3 +62,7 @@ export async function commit(message: string) {
 export async function stash() {
     await runGitCommand('git stash -u');
 }
+
+export async function logOneline() {
+    return await runGitCommand('git log --oneline');
+}
