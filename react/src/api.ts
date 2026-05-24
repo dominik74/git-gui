@@ -58,3 +58,7 @@ export async function unstageAll() {
 export async function commit(message: string) {
     await runGitCommand('git commit -m "' + message + '"');
 }
+
+export async function stash() {
+    await runGitCommand('git stash -u');
+}

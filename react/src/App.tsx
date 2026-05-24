@@ -29,6 +29,11 @@ function App() {
         fetchStatusInfo();
     }
 
+    async function stash() {
+        api.stash();
+        fetchStatusInfo();
+    }
+
     async function toggleStage(fileInfo: FileInfo) {
         if (fileInfo.isStaged) {
             api.unstage(fileInfo.path);
@@ -51,6 +56,7 @@ function App() {
                 <button onClick={fetchStatusInfo}>STATUS</button>
                 <button onClick={stageAll}>STAGE ALL</button>
                 <button onClick={unstageAll}>UNSTAGE ALL</button>
+                <button onClick={stash}>STASH</button>
 
                 <ul className="listbox">
                 {workingTreeFiles.map((file, i) => (
