@@ -30,7 +30,7 @@ async function runGitCommand(gitCommand: string) {
     const resp = await runShell(gitInteraction.command);
     gitInteraction.response = resp;
 
-    gitInteractions.push(gitInteraction as GitInteraction);
+    gitInteractions.unshift(gitInteraction as GitInteraction);
 
     return gitInteraction.response;
 }
