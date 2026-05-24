@@ -12,6 +12,7 @@ const META_STATUS_LINES = [
     '(use "git restore <file>..." to discard changes in working directory)',
     'no changes added to commit (use "git add" and/or "git commit -a")',
     'nothing added to commit but untracked files present (use "git add" to track)',
+    'nothing to commit, working tree clean',
 ];
 
 function parseFileState(fileState: string): FileState {
