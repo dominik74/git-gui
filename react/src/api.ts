@@ -78,3 +78,7 @@ export async function stashList() {
 export async function logOneline() {
     return await runGitCommand('git log --oneline');
 }
+
+export async function checkout(branchNameOrHash: string) {
+    await runGitCommand('git checkout ' + branchNameOrHash);
+}

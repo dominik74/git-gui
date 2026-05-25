@@ -86,6 +86,12 @@ function App() {
         setCommitMessage('');
     }
 
+    async function checkout(commitInfo: CommitInfo) {
+        api.checkout(commitInfo.hash);
+        fetchCurrentBranch();
+        fetchCommits();
+    }
+
     return (
         <div className="main">
             <section className="left-panel">
@@ -126,11 +132,16 @@ function App() {
                 <button onClick={fetchCommits}>LOG</button>
 
                 <h2>commits:</h2>
-                <ul>
+                <ul className="listbox">
                     {commits.map((commit, i) => (
                         <li key={i}>
-                            <span>{commit.hash} </span>
-                            <span>{commit.message}</span>
+                            <button
+                                className="listbox__item"
+                                onClick={() => checkout(commit)}
+                            >
+                                <span>{commit.hash} </span>
+                                <span>{commit.message}</span>
+                            </button>
                         </li>
                     ))}
                 </ul>
