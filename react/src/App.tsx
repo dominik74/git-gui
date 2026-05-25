@@ -15,10 +15,12 @@ function App() {
     const [stashEntries, setStashEntries] = useState<StashEntryInfo[]>([]);
     const [gitInteractions, setGitInteractions] = useState<GitInteraction[]>([]);
     const [commitMessage, setCommitMessage] = useState<string>('');
+    const [currentBranch, setCurrentBranch] = useState<string>('');
 
 
     useEffect(() => {
         fetchStatusInfo();
+        fetchCurrentBranch();
         fetchCommits();
         fetchStash();
         setGitInteractions(logging.gitInteractions);
@@ -26,6 +28,10 @@ function App() {
 
     async function fetchStatusInfo() {
         setWorkingTreeFiles((await status.getStatusInfo()).fileInfos);
+    }
+
+    async function fetchCurrentBranch() {
+        setCurrentBranch((await status.getStatusInfo()).currentBranch);
     }
 
     async function fetchCommits() {
@@ -114,6 +120,8 @@ function App() {
 
                     <button onClick={commit}>COMMIT</button>
                 </div>
+
+                <span>branch: {currentBranch}</span>
 
                 <button onClick={fetchCommits}>LOG</button>
 
