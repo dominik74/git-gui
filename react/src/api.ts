@@ -63,6 +63,18 @@ export async function stash() {
     await runGitCommand('git stash -u');
 }
 
+export async function stashStaged() {
+    await runGitCommand('git stash --staged');
+}
+
+export async function stashApply(idx: number) {
+    await runGitCommand('git stash apply stash@{' + idx + '}');
+}
+
+export async function stashList() {
+    return await runGitCommand('git stash list');
+}
+
 export async function logOneline() {
     return await runGitCommand('git log --oneline');
 }

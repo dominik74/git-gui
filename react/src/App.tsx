@@ -3,13 +3,16 @@ import * as api from './api.ts';
 import * as status from './status.ts';
 import * as logging from './logging.ts';
 import * as log from './log.ts';
+import * as stashParsing from './stash.ts';
 import type { FileInfo } from './types/FileInfo.ts'
 import type { GitInteraction } from './types/GitInteraction.ts';
 import type { CommitInfo } from './types/CommitInfo.ts';
+import type { StashEntryInfo } from './types/StashEntryInfo.ts';
 
 function App() {
     const [workingTreeFiles, setWorkingTreeFiles] = useState<FileInfo[]>([]);
     const [commits, setCommits] = useState<CommitInfo[]>([]);
+    const [stashEntries, setStashEntries] = useState<StashEntryInfo[]>([]);
     const [gitInteractions, setGitInteractions] = useState<GitInteraction[]>([]);
     const [commitMessage, setCommitMessage] = useState<string>('');
 
@@ -17,6 +20,7 @@ function App() {
     useEffect(() => {
         fetchStatusInfo();
         fetchCommits();
+        fetchStash();
         setGitInteractions(logging.gitInteractions);
     }, []);
 
@@ -26,6 +30,10 @@ function App() {
 
     async function fetchCommits() {
         setCommits(await log.getCommits());
+    }
+
+    async function fetchStash() {
+        setStashEntries(await stashParsing.getStash());
     }
 
     async function stageAll() {
@@ -40,6 +48,18 @@ function App() {
 
     async function stash() {
         api.stash();
+        fetchStatusInfo();
+        fetchStash();
+    }
+
+    async function stashStaged() {
+        api.stashStaged();
+        fetchStatusInfo();
+        fetchStash();
+    }
+
+    async function stashApply(stashEntryInfo: StashEntryInfo) {
+        api.stashApply(stashEntryInfo.index);
         fetchStatusInfo();
     }
 
@@ -67,6 +87,7 @@ function App() {
                 <button onClick={stageAll}>STAGE ALL</button>
                 <button onClick={unstageAll}>UNSTAGE ALL</button>
                 <button onClick={stash}>STASH</button>
+                <button onClick={stashStaged}>STASH STAGED</button>
 
                 <ul className="listbox">
                 {workingTreeFiles.map((file, i) => (
@@ -102,6 +123,21 @@ function App() {
                         <li key={i}>
                             <span>{commit.hash} </span>
                             <span>{commit.message}</span>
+                        </li>
+                    ))}
+                </ul>
+
+                <h2>stash:</h2>
+                <ul className="listbox">
+                    {stashEntries.map((stashEntry, i) => (
+                        <li key={i}>
+                            <button
+                                className="listbox__item"
+                                onClick={() => stashApply(stashEntry)}
+                            >
+                                <span>{stashEntry.index} </span>
+                                <span>{stashEntry.message}</span>
+                            </button>
                         </li>
                     ))}
                 </ul>
