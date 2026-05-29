@@ -82,3 +82,7 @@ export async function logOneline() {
 export async function checkout(branchNameOrHash: string) {
     await runGitCommand('git checkout ' + branchNameOrHash);
 }
+
+export async function branch() {
+    return await runGitCommand('git branch');
+}

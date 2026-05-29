@@ -4,14 +4,17 @@ import * as status from './status.ts';
 import * as logging from './logging.ts';
 import * as log from './log.ts';
 import * as stashParsing from './stash.ts';
+import * as branch from './branch.ts';
 import type { FileInfo } from './types/FileInfo.ts'
 import type { GitInteraction } from './types/GitInteraction.ts';
 import type { CommitInfo } from './types/CommitInfo.ts';
 import type { StashEntryInfo } from './types/StashEntryInfo.ts';
+import type { BranchInfo } from './types/BranchInfo.ts';
 
 function App() {
     const [workingTreeFiles, setWorkingTreeFiles] = useState<FileInfo[]>([]);
     const [commits, setCommits] = useState<CommitInfo[]>([]);
+    const [branches, setBranches] = useState<BranchInfo[]>([]);
     const [stashEntries, setStashEntries] = useState<StashEntryInfo[]>([]);
     const [gitInteractions, setGitInteractions] = useState<GitInteraction[]>([]);
     const [commitMessage, setCommitMessage] = useState<string>('');
@@ -22,6 +25,7 @@ function App() {
         fetchStatusInfo();
         fetchCurrentBranch();
         fetchCommits();
+        fetchBranches();
         fetchStash();
         setGitInteractions(logging.gitInteractions);
     }, []);
@@ -36,6 +40,10 @@ function App() {
 
     async function fetchCommits() {
         setCommits(await log.getCommits());
+    }
+
+    async function fetchBranches() {
+        setBranches(await branch.getBranches());
     }
 
     async function fetchStash() {
@@ -86,8 +94,15 @@ function App() {
         setCommitMessage('');
     }
 
-    async function checkout(commitInfo: CommitInfo) {
-        api.checkout(commitInfo.hash);
+    async function checkout(object: CommitInfo | string) {
+        let branchNameOrHash;
+        if (typeof object === 'string') {
+            branchNameOrHash = object;
+        } else {
+            branchNameOrHash = object.hash;
+        }
+
+        api.checkout(branchNameOrHash);
         fetchCurrentBranch();
         fetchCommits();
     }
@@ -126,6 +141,21 @@ function App() {
 
                     <button onClick={commit}>COMMIT</button>
                 </div>
+
+                <h2>branches:</h2>
+                <ul className="listbox">
+                    {branches.map((branch, i) => (
+                        <li key={i}>
+                            <button
+                                className="listbox__item"
+                                onClick={() => checkout(branch.branchName)}
+                            >
+                                <span>{branch.isCheckedOut && '> '}</span>
+                                <span>{branch.branchName}</span>
+                            </button>
+                        </li>
+                    ))}
+                </ul>
 
                 <span>branch: {currentBranch}</span>
 
