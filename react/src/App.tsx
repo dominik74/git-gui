@@ -109,6 +109,7 @@ function App() {
         api.checkout(branchNameOrHash);
         fetchCurrentBranch();
         fetchCommits();
+        fetchBranches();
     }
 
     async function showCreateNewBranchModal() {
