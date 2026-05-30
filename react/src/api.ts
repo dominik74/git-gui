@@ -83,6 +83,10 @@ export async function checkout(branchNameOrHash: string) {
     await runGitCommand('git checkout ' + branchNameOrHash);
 }
 
-export async function branch() {
-    return await runGitCommand('git branch');
+export async function branch(branchName?: string) {
+    if (branchName !== undefined) {
+        return await runGitCommand('git branch ' + branchName);
+    } else {
+        return await runGitCommand('git branch');
+    }
 }

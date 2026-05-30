@@ -10,6 +10,7 @@ import type { GitInteraction } from './types/GitInteraction.ts';
 import type { CommitInfo } from './types/CommitInfo.ts';
 import type { StashEntryInfo } from './types/StashEntryInfo.ts';
 import type { BranchInfo } from './types/BranchInfo.ts';
+import Modal from './components/Modal.tsx';
 
 function App() {
     const [workingTreeFiles, setWorkingTreeFiles] = useState<FileInfo[]>([]);
@@ -20,6 +21,9 @@ function App() {
     const [commitMessage, setCommitMessage] = useState<string>('');
     const [currentBranch, setCurrentBranch] = useState<string>('');
 
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalOnSubmit, setModalOnSubmit] = useState<(value: string) => void>(() => {});
+    const [modalIsVisible, setModalIsVisible] = useState<boolean>(false);
 
     useEffect(() => {
         fetchStatusInfo();
@@ -107,7 +111,20 @@ function App() {
         fetchCommits();
     }
 
+    async function showCreateNewBranchModal() {
+        setModalTitle('New branch name:');
+        setModalOnSubmit(() => createNewBranch);
+        setModalIsVisible(true);
+    }
+
+    function createNewBranch(branchName: string) {
+        api.branch(branchName);
+        fetchBranches();
+        fetchCommits();
+    }
+
     return (
+        <>
         <div className="main">
             <section className="left-panel">
                 <button onClick={fetchStatusInfo}>STATUS</button>
@@ -157,9 +174,12 @@ function App() {
                     ))}
                 </ul>
 
-                <span>branch: {currentBranch}</span>
+                <div>
+                    <span>branch: {currentBranch}</span>
+                    <button onClick={fetchCommits}>LOG</button>
+                </div>
 
-                <button onClick={fetchCommits}>LOG</button>
+                <button onClick={showCreateNewBranchModal}>NEW BRANCH</button>
 
                 <h2>commits:</h2>
                 <ul className="listbox">
@@ -211,6 +231,15 @@ function App() {
                 </ul>
             </section>
         </div>
+
+            {modalIsVisible &&
+                <Modal
+                    title={modalTitle}
+                    onSubmit={modalOnSubmit}
+                    setIsVisible={setModalIsVisible}
+                />
+            }
+        </>
     )
 }
 
