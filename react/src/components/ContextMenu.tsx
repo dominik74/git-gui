@@ -9,26 +9,37 @@ interface ContextMenuProps {
 }
 
 export default function ContextMenu(props: ContextMenuProps) {
+    function onBackgroundClick(event) {
+        if (event.target === event.currentTarget) {
+            props.setIsVisible(false);
+        }
+    }
+
     function onButtonClick(button) {
         button.action();
         props.setIsVisible(false);
     }
 
     return (
-        <ul
+        <div
             className="context-menu"
-            style={{ top: props.top, left: props.left }}
+            onClick={onBackgroundClick}
         >
-            {props.buttons.map((button, i) => (
-                <li key={i}>
-                    <button
-                        className="context-menu__button"
-                        onClick={() => onButtonClick(button)}
-                    >
-                        {button.text}
-                    </button>
-                </li>
-            ))}
-        </ul>
+            <ul
+                className="context-menu__window"
+                style={{ top: props.top, left: props.left }}
+            >
+                {props.buttons.map((button, i) => (
+                    <li key={i}>
+                        <button
+                            className="context-menu__button"
+                            onClick={() => onButtonClick(button)}
+                        >
+                            {button.text}
+                        </button>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 }
