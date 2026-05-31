@@ -11,6 +11,8 @@ import type { CommitInfo } from './types/CommitInfo.ts';
 import type { StashEntryInfo } from './types/StashEntryInfo.ts';
 import type { BranchInfo } from './types/BranchInfo.ts';
 import Modal from './components/Modal.tsx';
+import ContextMenu from './components/ContextMenu.tsx';
+import type { CtxMenuButton } from './types/CtxMenuButton.ts';
 
 function App() {
     const [workingTreeFiles, setWorkingTreeFiles] = useState<FileInfo[]>([]);
@@ -24,6 +26,11 @@ function App() {
     const [modalTitle, setModalTitle] = useState<string>('');
     const [modalOnSubmit, setModalOnSubmit] = useState<(value: string) => void>(() => {});
     const [modalIsVisible, setModalIsVisible] = useState<boolean>(false);
+
+    const [ctxMenuTop, setCtxMenuTop] = useState<number>(0);
+    const [ctxMenuLeft, setCtxMenuLeft] = useState<number>(0);
+    const [ctxMenuButtons, setCtxMenuButtons] = useState<CtxMenuButton[]>([]);
+    const [ctxMenuIsVisible, setCtxMenuIsVisible] = useState<boolean>(false);
 
     useEffect(() => {
         fetchStatusInfo();
@@ -124,6 +131,23 @@ function App() {
         fetchCommits();
     }
 
+    function discard(filePath: string) {
+        api.discard(filePath);
+        fetchStatusInfo();
+    }
+
+    function onWorkingTreeFileCtxMenu(event, fileInfo) {
+        event.preventDefault();
+
+        setCtxMenuTop(event.clientY);
+        setCtxMenuLeft(event.clientX);
+        setCtxMenuButtons([
+            { text: 'toggle stage', action: () => toggleStage(fileInfo) },
+            { text: 'discard', action: () => discard(fileInfo.path) },
+        ]);
+        setCtxMenuIsVisible(true);
+    }
+
     return (
         <>
         <div className="main">
@@ -142,6 +166,7 @@ function App() {
                         <button
                             className="listbox__item"
                             onClick={() => toggleStage(file)}
+                            onContextMenu={(e) => onWorkingTreeFileCtxMenu(e, file)}
                             style={{ color: file.isStaged ? 'green' : 'red' }}
                         >
                             <span>{file.state}: </span>
@@ -238,6 +263,15 @@ function App() {
                     title={modalTitle}
                     onSubmit={modalOnSubmit}
                     setIsVisible={setModalIsVisible}
+                />
+            }
+
+            {ctxMenuIsVisible &&
+                <ContextMenu
+                    top={ctxMenuTop}
+                    left={ctxMenuLeft}
+                    buttons={ctxMenuButtons}
+                    setIsVisible={setCtxMenuIsVisible}
                 />
             }
         </>

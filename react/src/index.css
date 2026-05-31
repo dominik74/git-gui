@@ -77,3 +77,22 @@
     outline: none;
     border: 1px solid dodgerblue;
 }
+
+.context-menu {
+    position: absolute;
+    background: lightgray;
+    list-style-type: none;
+    min-width: 100px;
+}
+
+.context-menu__button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: start;
+}
+
+.context-menu__button:hover {
+    background: gray;
+    color: white;
+}

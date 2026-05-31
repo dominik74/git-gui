@@ -90,3 +90,7 @@ export async function branch(branchName?: string) {
         return await runGitCommand('git branch');
     }
 }
+
+export async function discard(filePath: string) {
+    await runGitCommand('git restore "' + filePath + '"');
+}
