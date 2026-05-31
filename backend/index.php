@@ -7,13 +7,14 @@ header('Access-Control-Allow-Headers: Content-Type');
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 $command = $data['command'] ?? '';
+$cwd = $data['cwd'] ?? '../git';
 
 error_log('< received from client, command:');
 error_log($command);
 
 header('Content-Type: application/json');
 
-chdir('../git');
+chdir($cwd);
 $shellOutput = shell_exec($command);
 $output = mb_convert_encoding($shellOutput, 'UTF-8', 'UTF-8');
 

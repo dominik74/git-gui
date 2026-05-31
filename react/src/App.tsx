@@ -13,8 +13,10 @@ import type { BranchInfo } from './types/BranchInfo.ts';
 import Modal from './components/Modal.tsx';
 import ContextMenu from './components/ContextMenu.tsx';
 import type { CtxMenuButton } from './types/CtxMenuButton.ts';
+import * as global from './global.ts';
 
 function App() {
+    const [repoPath, setRepoPath] = useState<string>('');
     const [workingTreeFiles, setWorkingTreeFiles] = useState<FileInfo[]>([]);
     const [commits, setCommits] = useState<CommitInfo[]>([]);
     const [branches, setBranches] = useState<BranchInfo[]>([]);
@@ -33,13 +35,18 @@ function App() {
     const [ctxMenuIsVisible, setCtxMenuIsVisible] = useState<boolean>(false);
 
     useEffect(() => {
+        fetchAll();
+        setGitInteractions(logging.gitInteractions);
+        setRepoPath(global.cwd);
+    }, []);
+
+    function fetchAll() {
         fetchStatusInfo();
         fetchCurrentBranch();
         fetchCommits();
         fetchBranches();
         fetchStash();
-        setGitInteractions(logging.gitInteractions);
-    }, []);
+    }
 
     async function fetchStatusInfo() {
         setWorkingTreeFiles((await status.getStatusInfo()).fileInfos);
@@ -125,10 +132,22 @@ function App() {
         setModalIsVisible(true);
     }
 
+    async function showSwitchRepoModal() {
+        setModalTitle('Repo directory:');
+        setModalOnSubmit(() => switchRepo);
+        setModalIsVisible(true);
+    }
+
     function createNewBranch(branchName: string) {
         api.branch(branchName);
         fetchBranches();
         fetchCommits();
+    }
+
+    function switchRepo(repoPath: string) {
+        global.setCwd(repoPath);
+        setRepoPath(global.cwd);
+        fetchAll();
     }
 
     function discard(filePath: string) {
@@ -152,6 +171,11 @@ function App() {
         <>
         <div className="main">
             <section className="left-panel">
+                <div>
+                    <span>{repoPath}</span>
+                    <button onClick={showSwitchRepoModal}>SWITCH REPO</button>
+                </div>
+
                 <button onClick={fetchStatusInfo}>STATUS</button>
                 <button onClick={stageAll}>STAGE ALL</button>
                 <button onClick={unstageAll}>UNSTAGE ALL</button>

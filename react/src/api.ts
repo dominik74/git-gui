@@ -1,5 +1,6 @@
 import { gitInteractions } from "./logging";
 import type { GitInteraction } from "./types/GitInteraction";
+import * as global from './global.ts';
 
 const API_URL = 'http://localhost:8000';
 
@@ -10,7 +11,8 @@ async function runShell(command: string): Promise<string> {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            command: command
+            cwd: global.cwd,
+            command: command,
         })
     });
 
