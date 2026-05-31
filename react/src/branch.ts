@@ -7,7 +7,7 @@ export async function getBranches(): Promise<BranchInfo[]> {
     const branches: BranchInfo[] = [];
     for (let i: number = 0; i < strBranches.length; i++) {
         const branch: Partial<BranchInfo> = {};
-        branch.branchName = strBranches[i].replace('* ', '');
+        branch.branchName = strBranches[i].replace('* ', '').trim();
         branch.isCheckedOut = strBranches[i].startsWith('* ');
 
         branches.push(branch as BranchInfo);
