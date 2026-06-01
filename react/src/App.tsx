@@ -168,119 +168,164 @@ function App() {
     }
 
     return (
-        <>
-        <div className="main">
-            <section className="left-panel">
-                <div>
-                    <span>{repoPath}</span>
-                    <button onClick={showSwitchRepoModal}>SWITCH REPO</button>
-                </div>
+        <div className="root">
+            <div className="repo-panel">
+                <span>{repoPath}</span>
+                <button
+                    className="button"
+                    onClick={showSwitchRepoModal}
+                >
+                    SWITCH REPO
+                </button>
+            </div>
 
-                <button onClick={fetchStatusInfo}>STATUS</button>
-                <button onClick={stageAll}>STAGE ALL</button>
-                <button onClick={unstageAll}>UNSTAGE ALL</button>
-                <button onClick={stash}>STASH</button>
-                <button onClick={stashStaged}>STASH STAGED</button>
+            <div className="main">
+                <section className="left-panel panel-column">
+                    <section className="panel-column__panel panel">
+                        <div className="panel__title-bar">
+                            <h2 className="panel__title">branches:</h2>
+                        </div>
+                        <ul className="panel__body listbox">
+                            {branches.map((branch, i) => (
+                                <li key={i}>
+                                    <button
+                                        className="listbox__item"
+                                        onClick={() => checkout(branch.branchName)}
+                                    >
+                                        <span>{branch.isCheckedOut && '> '}</span>
+                                        <span>{branch.branchName}</span>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
 
-                <ul className="listbox">
-                {workingTreeFiles.map((file, i) => (
-                    <li
-                        key={i}
-                    >
+                    <section className="panel-column__panel panel">
+                        <div className="panel__title-bar">
+                            <h2 className="panel__title">commits:</h2>
+                        </div>
+                        <ul className="panel__body listbox">
+                            {commits.map((commit, i) => (
+                                <li key={i}>
+                                    <button
+                                        className="listbox__item"
+                                        onClick={() => checkout(commit)}
+                                    >
+                                        <span>{commit.hash} </span>
+                                        <span>{commit.message}</span>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    <section className="panel-column__panel panel">
+                        <div className="panel__title-bar">
+                            <h2 className="panel__title">stash:</h2>
+                        </div>
+                        <ul className="panel__body listbox">
+                            {stashEntries.map((stashEntry, i) => (
+                                <li key={i}>
+                                    <button
+                                        className="listbox__item"
+                                        onClick={() => stashApply(stashEntry)}
+                                    >
+                                        <span>{stashEntry.index} </span>
+                                        <span>{stashEntry.message}</span>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    
+
+                    <section className="panel-column__panel panel">
+                        <div className="panel__title-bar">
+                            <h2 className="panel__title">working tree:</h2>
+
+                            <div className="panel__controls">
+                                <button
+                                    className="button"
+                                    onClick={stageAll}
+                                >
+                                    STAGE ALL
+                                </button>
+                                <button
+                                    className="button"
+                                    onClick={unstageAll}
+                                >
+                                    UNSTAGE ALL
+                                </button>
+                                <button
+                                    className="button"
+                                    onClick={stash}
+                                >
+                                    STASH
+                                </button>
+                                <button
+                                    className="button"
+                                    onClick={stashStaged}
+                                >
+                                    STASH STAGED
+                                </button>
+                            </div>
+                        </div>
+                        <ul className="panel__body listbox">
+                            {workingTreeFiles.map((file, i) => (
+                                <li
+                                    key={i}
+                                >
+                                    <button
+                                        className="listbox__item"
+                                        onClick={() => toggleStage(file)}
+                                        onContextMenu={(e) => onWorkingTreeFileCtxMenu(e, file)}
+                                        style={{ color: file.isStaged ? 'green' : 'red' }}
+                                    >
+                                        <span>{file.state}: </span>
+                                        <span>{file.path}</span>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    <div className="panel-column__panel commit-panel">
+                        <input
+                            className="commit-panel__input"
+                            type="text"
+                            value={commitMessage}
+                            onChange={(e) => setCommitMessage(e.target.value)}
+                        />
+
                         <button
-                            className="listbox__item"
-                            onClick={() => toggleStage(file)}
-                            onContextMenu={(e) => onWorkingTreeFileCtxMenu(e, file)}
-                            style={{ color: file.isStaged ? 'green' : 'red' }}
+                            className="commit-panel__button button"
+                            onClick={commit}
                         >
-                            <span>{file.state}: </span>
-                            <span>{file.path}</span>
+                            COMMIT
                         </button>
-                    </li>
-                ))}
-                </ul>
+                    </div>
+                </section>
 
-                <div>
-                    <textarea
-                        value={commitMessage}
-                        onChange={(e) => setCommitMessage(e.target.value)}
-                    />
-
-                    <button onClick={commit}>COMMIT</button>
-                </div>
-
-                <h2>branches:</h2>
-                <ul className="listbox">
-                    {branches.map((branch, i) => (
-                        <li key={i}>
-                            <button
-                                className="listbox__item"
-                                onClick={() => checkout(branch.branchName)}
+                <section className="right-panel">
+                    <ul className="git-interactions">
+                        {gitInteractions.map((interaction, i) => (
+                            <li
+                                key={i}
+                                className="git-interactions__item"
                             >
-                                <span>{branch.isCheckedOut && '> '}</span>
-                                <span>{branch.branchName}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-
-                <div>
-                    <span>branch: {currentBranch}</span>
-                    <button onClick={fetchCommits}>LOG</button>
-                </div>
-
-                <button onClick={showCreateNewBranchModal}>NEW BRANCH</button>
-
-                <h2>commits:</h2>
-                <ul className="listbox">
-                    {commits.map((commit, i) => (
-                        <li key={i}>
-                            <button
-                                className="listbox__item"
-                                onClick={() => checkout(commit)}
-                            >
-                                <span>{commit.hash} </span>
-                                <span>{commit.message}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-
-                <h2>stash:</h2>
-                <ul className="listbox">
-                    {stashEntries.map((stashEntry, i) => (
-                        <li key={i}>
-                            <button
-                                className="listbox__item"
-                                onClick={() => stashApply(stashEntry)}
-                            >
-                                <span>{stashEntry.index} </span>
-                                <span>{stashEntry.message}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </section>
-
-            <section className="right-panel">
-                <ul className="git-interactions">
-                    {gitInteractions.map((interaction, i) => (
-                        <li
-                            key={i}
-                            className="git-interactions__item"
-                        >
-                            <p className="git-interactions__command">{interaction.command}</p>
-                            <p className="git-interactions__response">
-                                {interaction.response === '' ?
-                                    '(no response)' :
-                                    interaction.response
-                                }
-                            </p>
-                        </li>
-                    ))}
-                </ul>
-            </section>
-        </div>
+                                <p className="git-interactions__command">{interaction.command}</p>
+                                <p className="git-interactions__response">
+                                    {interaction.response === '' ?
+                                        '(no response)' :
+                                        interaction.response
+                                    }
+                                </p>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            </div>
 
             {modalIsVisible &&
                 <Modal
@@ -298,7 +343,7 @@ function App() {
                     setIsVisible={setCtxMenuIsVisible}
                 />
             }
-        </>
+        </div>
     )
 }
 
