@@ -167,6 +167,12 @@ function App() {
         setCtxMenuIsVisible(true);
     }
 
+    function onCommitInputKeyDown(event) {
+        if (event.key === 'Enter') {
+            commit();
+        }
+    }
+
     return (
         <div className="root">
             <div className="repo-panel">
@@ -296,6 +302,7 @@ function App() {
                             type="text"
                             value={commitMessage}
                             onChange={(e) => setCommitMessage(e.target.value)}
+                            onKeyDown={onCommitInputKeyDown}
                         />
 
                         <button
